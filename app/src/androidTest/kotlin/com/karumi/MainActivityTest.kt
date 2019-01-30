@@ -9,6 +9,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.karumi.data.repository.SuperHeroRepository
+import com.karumi.domain.model.SuperHero
+import com.karumi.matchers.ToolbarMatcher
 import com.karumi.ui.view.MainActivity
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Test
@@ -28,6 +30,16 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
         startActivity()
 
         onView(withText("¯\\_(ツ)_/¯")).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun showsToolbarWithProperTitle() {
+        val mainActivity = startActivity()
+
+        val toolbarMatcher = ToolbarMatcher
+
+        val expectedTitle = mainActivity.getText(R.string.app_name)
+        toolbarMatcher.onToolbarWithTitle(expectedTitle)
     }
 
     private fun givenThereAreNoSuperHeroes() {
