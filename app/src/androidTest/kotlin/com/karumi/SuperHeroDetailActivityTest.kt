@@ -16,6 +16,7 @@ import com.karumi.domain.model.SuperHero
 import com.karumi.matchers.ToolbarMatcher
 import com.karumi.ui.view.SuperHeroDetailActivity
 import com.nhaarman.mockitokotlin2.whenever
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +38,13 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
 
         startActivityWithSuperHero(superHero)
 
-        onView(withId(R.id.tv_super_hero_name)).check(matches(isDisplayed()))
+        onView(
+                allOf(
+                        withId(R.id.tv_super_hero_name),
+                        withText(superHero.name)
+
+                ))
+                .check(matches(isDisplayed()))
     }
 
     @Test
@@ -73,7 +80,13 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
 
         startActivityWithSuperHero(superHero)
 
-        onView(withText(TEST_DESCRIPTION_SHORT)).check(matches(isDisplayed()))
+        onView(
+                allOf(
+                        withId(R.id.tv_super_hero_description),
+                        withText(TEST_DESCRIPTION_SHORT)
+
+                ))
+                .check(matches(isDisplayed()))
     }
 
     @Test
@@ -82,7 +95,13 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
 
         startActivityWithSuperHero(superHero)
 
-        onView(withText(TEST_DESCRIPTION_VERY_LONG)).check(matches(isDisplayed()))
+        onView(
+                allOf(
+                        withId(R.id.tv_super_hero_description),
+                        withText(TEST_DESCRIPTION_VERY_LONG)
+
+                ))
+                .check(matches(isDisplayed()))
     }
 
     @Test
@@ -104,7 +123,7 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
                 },
                 photo = when {
                     withPicture -> TEST_PICTURE
-                    else -> ""
+                    else -> null
                 },
                 description = when (descriptionLength) {
                     DescriptionLength.SHORT -> TEST_DESCRIPTION_SHORT
