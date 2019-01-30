@@ -138,8 +138,8 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         return superHero
     }
 
-    private fun startActivityWithSuperHero(superHero: SuperHero) {
-        startActivity(Bundle().apply {
+    private fun startActivityWithSuperHero(superHero: SuperHero): SuperHeroDetailActivity {
+        return startActivity(Bundle().apply {
             putString("super_hero_name_key", superHero.name)
         })
     }
