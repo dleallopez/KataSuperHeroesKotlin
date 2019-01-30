@@ -1,7 +1,12 @@
 package com.karumi
 
 import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import android.support.test.espresso.intent.Intents.intended
+import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.hasDescendant
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -9,6 +14,7 @@ import android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.runner.AndroidJUnit4
+import android.support.v7.widget.RecyclerView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
@@ -18,6 +24,7 @@ import com.karumi.matchers.RecyclerViewItemsCountMatcher
 import com.karumi.matchers.ToolbarMatcher
 import com.karumi.recyclerview.RecyclerViewInteraction
 import com.karumi.ui.view.MainActivity
+import com.karumi.ui.view.SuperHeroDetailActivity
 import com.nhaarman.mockitokotlin2.whenever
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
@@ -57,6 +64,15 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
         startActivity()
 
         onView(withId(R.id.tv_empty_case)).check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun progressBarHiddenAfterLoadingSomeSuperHeroes() {
+        givenSomeSuperHeroes()
+
+        startActivity()
+
+        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())))
     }
 
     @Test
@@ -107,13 +123,19 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
                 }
     }
 
+    @Test
+    fun triggersProperIntentWhenTappingOnItem() {
+        val superHeroes = givenSomeSuperHeroes()
+        val superHeroIndex = 0
+        val superHero = superHeroes[superHeroIndex]
 
-//    @Test
-//    fun triggersProperIntentWhenTappingOnItem() {
-//        givenSomeSuperHeroes()
-//
-//        startActivity()
-//    }
+        startActivity()
+
+        onView(withId(R.id.recycler_view)).perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(superHeroIndex, click()))
+
+        intended(hasComponent(SuperHeroDetailActivity::class.java.canonicalName))
+        intended(hasExtra("super_hero_name_key", superHero.name))
+    }
 
     private fun givenThereAreNoSuperHeroes() {
         whenever(repository.getAllSuperHeroes()).thenReturn(emptyList())
@@ -149,16 +171,15 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
                     )
             )
         }
-
         whenever(repository.getAllSuperHeroes()).thenReturn(superheroes)
 
         return superheroes
     }
 
     private fun mockSuperheroes(size: Int, avengers: Boolean = false): List<SuperHero> {
-        val list = mutableListOf<SuperHero>()
+        val superheroes = mutableListOf<SuperHero>()
         for (index in 0 until size) {
-            list.add(
+            superheroes.add(
                     SuperHero(
                             name = "superHero $index",
                             photo = null,
@@ -168,7 +189,11 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
             )
         }
 
-        return list
+        superheroes.forEach {
+            whenever(repository.getByName(it.name)).thenReturn(it)
+        }
+
+        return superheroes
     }
 
     override val testDependencies = Kodein.Module(allowSilentOverride = true) {
