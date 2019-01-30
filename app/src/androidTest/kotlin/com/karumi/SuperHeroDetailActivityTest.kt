@@ -2,6 +2,7 @@ package com.karumi
 
 import android.os.Bundle
 import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.action.ViewActions.scrollTo
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -79,6 +80,7 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         val superHero = givenSuperHero(isAvenger = false, descriptionLength = DescriptionLength.SHORT)
 
         startActivityWithSuperHero(superHero)
+        scrollToView(R.id.tv_super_hero_description)
 
         onView(
                 allOf(
@@ -94,6 +96,7 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         val superHero = givenSuperHero(isAvenger = false, descriptionLength = DescriptionLength.VERY_LONG)
 
         startActivityWithSuperHero(superHero)
+        scrollToView(R.id.tv_super_hero_description)
 
         onView(
                 allOf(
@@ -142,6 +145,10 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         return startActivity(Bundle().apply {
             putString("super_hero_name_key", superHero.name)
         })
+    }
+
+    private fun scrollToView(viewId: Int) {
+        onView(withId(viewId)).perform(scrollTo())
     }
 }
 
