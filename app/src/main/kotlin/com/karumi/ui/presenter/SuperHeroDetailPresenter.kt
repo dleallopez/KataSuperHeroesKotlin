@@ -14,8 +14,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class SuperHeroDetailPresenter(
-    view: View,
-    private val getSuperHeroByName: GetSuperHeroByName
+        view: View,
+        private val getSuperHeroByName: GetSuperHeroByName
 ) : LifecycleObserver, CoroutineScope by MainScope() {
 
     private val view: View? by weak(view)
@@ -44,7 +44,10 @@ class SuperHeroDetailPresenter(
     private fun refreshSuperHeroes() = launch {
         val result = async { getSuperHeroByName(name) }
         view?.hideLoading()
-        view?.showSuperHero(result)
+        result?.let {
+            view?.showSuperHero(it)
+        } ?: view?.showError("Superhero not found!")
+
     }
 
     interface View {
@@ -52,5 +55,7 @@ class SuperHeroDetailPresenter(
         fun showLoading()
         fun hideLoading()
         fun showSuperHero(superHero: SuperHero)
+
+        fun showError(errorMessage: String)
     }
 }

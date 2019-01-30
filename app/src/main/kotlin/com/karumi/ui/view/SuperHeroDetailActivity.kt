@@ -2,6 +2,7 @@ package com.karumi.ui.view
 
 import android.app.Activity
 import android.content.Intent
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.Toolbar
 import android.view.View
 import com.github.salomonbrys.kodein.Kodein.Module
@@ -54,6 +55,10 @@ class SuperHeroDetailActivity : BaseActivity(), SuperHeroDetailPresenter.View {
         tv_super_hero_description.text = superHero.description
         iv_avengers_badge.visibility = if (superHero.isAvenger) View.VISIBLE else View.GONE
         iv_super_hero_photo.setImageBackground(superHero.photo)
+    }
+
+    override fun showError(errorMessage: String) {
+        Snackbar.make(coordinator, errorMessage, Snackbar.LENGTH_LONG).show()
     }
 
     override val activityModules = Module(allowSilentOverride = true) {

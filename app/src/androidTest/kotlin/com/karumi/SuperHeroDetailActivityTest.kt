@@ -21,6 +21,7 @@ import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 
 @RunWith(AndroidJUnit4::class)
@@ -116,6 +117,20 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         onView(withId(R.id.progress_bar)).check(matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
     }
 
+    @Test
+    fun showsErrorGivenSuperHeroDoesNotExist(){
+        givenSuperHeroDoesNotExist()
+
+        startActivityWithSuperHero(null)
+
+        onView(withId(android.support.design.R.id.snackbar_text))
+                .check(matches(withText("Superhero not found!")))
+    }
+
+    private fun givenSuperHeroDoesNotExist() {
+        whenever(repository.getByName(anyString())).thenReturn(null)
+    }
+
     private fun givenSuperHero(isAvenger: Boolean = false,
                                withPicture: Boolean = true,
                                descriptionLength: DescriptionLength = DescriptionLength.SHORT): SuperHero {
@@ -141,9 +156,9 @@ class SuperHeroDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Supe
         return superHero
     }
 
-    private fun startActivityWithSuperHero(superHero: SuperHero): SuperHeroDetailActivity {
+    private fun startActivityWithSuperHero(superHero: SuperHero?): SuperHeroDetailActivity {
         return startActivity(Bundle().apply {
-            putString("super_hero_name_key", superHero.name)
+            putString("super_hero_name_key", superHero?.name ?: NON_EXISTING_NAME)
         })
     }
 
@@ -157,6 +172,8 @@ enum class DescriptionLength { SHORT, LONG, VERY_LONG }
 private const val TEST_PICTURE = "https://i.annihil.us/u/prod/marvel/i/mg/9/b0/537bc2375dfb9.jpg"
 private const val AVENGER_NAME = "Avenger"
 private const val NO_AVENGER_NAME = "No Avenger"
+
+private const val NON_EXISTING_NAME = "NoAvengerWithThisName"
 
 private const val TEST_DESCRIPTION_SHORT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vestibulum dui magna."
 private const val TEST_DESCRIPTION_LONG = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas at vestibulum sapien, eu tempus dolor. Quisque pretium orci at dolor maximus mattis. Suspendisse auctor, urna ut vestibulum euismod, enim nisi consectetur dui, at dictum risus neque ultrices mi. Praesent tincidunt tellus quam. Lorem ipsum dolor sit amet, consectetur adipiscing elit."

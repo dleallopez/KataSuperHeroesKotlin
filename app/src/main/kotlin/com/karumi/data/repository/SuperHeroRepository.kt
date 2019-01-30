@@ -20,7 +20,7 @@ class SuperHeroRepository {
         return superHeroes
     }
 
-    fun getByName(name: String): SuperHero {
+    fun getByName(name: String): SuperHero? {
         waitABit()
         return superHeroes.first { it.name == name }
     }
