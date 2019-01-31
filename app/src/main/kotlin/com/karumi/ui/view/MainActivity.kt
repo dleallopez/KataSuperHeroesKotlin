@@ -1,6 +1,7 @@
 package com.karumi.ui.view
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -61,11 +62,15 @@ class MainActivity : BaseActivity(), SuperHeroesPresenter.View {
         SuperHeroDetailActivity.open(activity = this, superHeroName = name)
     }
 
+    override fun showError(errorMessage: String) {
+        Snackbar.make(contentView, errorMessage, Snackbar.LENGTH_LONG).show()
+    }
+
     override val activityModules = Module(allowSilentOverride = true) {
         bind<SuperHeroesPresenter>() with provider {
             SuperHeroesPresenter(
-                this@MainActivity,
-                instance()
+                    this@MainActivity,
+                    instance()
             )
         }
         bind<GetSuperHeroes>() with provider { GetSuperHeroes(instance()) }

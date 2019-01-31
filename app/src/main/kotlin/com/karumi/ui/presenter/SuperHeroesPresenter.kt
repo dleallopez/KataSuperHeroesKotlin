@@ -14,8 +14,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class SuperHeroesPresenter(
-    view: View,
-    private val getSuperHeroes: GetSuperHeroes
+        view: View,
+        private val getSuperHeroes: GetSuperHeroes
 ) : LifecycleObserver, CoroutineScope by MainScope() {
 
     private val view: View? by weak(view)
@@ -32,11 +32,16 @@ class SuperHeroesPresenter(
     }
 
     private fun refreshSuperHeroes() = launch {
-        val result = async { getSuperHeroes() }
-        view?.hideLoading()
-        when {
-            result.isEmpty() -> view?.showEmptyCase()
-            else -> view?.showSuperHeroes(result)
+        try {
+            val result = async { getSuperHeroes() }
+            view?.hideLoading()
+            when {
+                result.isEmpty() -> view?.showEmptyCase()
+                else -> view?.showSuperHeroes(result)
+            }
+        } catch (e: NetworkErrorException) {
+            view?.hideLoading()
+            view?.showError("Network error!")
         }
     }
 
@@ -48,5 +53,9 @@ class SuperHeroesPresenter(
         fun showLoading()
         fun showEmptyCase()
         fun openDetail(name: String)
+
+        fun showError(errorMessage: String)
     }
 }
+
+object NetworkErrorException : Exception("Network error")

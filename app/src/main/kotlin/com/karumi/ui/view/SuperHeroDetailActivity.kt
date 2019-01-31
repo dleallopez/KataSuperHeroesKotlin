@@ -58,7 +58,7 @@ class SuperHeroDetailActivity : BaseActivity(), SuperHeroDetailPresenter.View {
     }
 
     override fun showError(errorMessage: String) {
-        Snackbar.make(coordinator, errorMessage, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(contentView, errorMessage, Snackbar.LENGTH_LONG).show()
     }
 
     override val activityModules = Module(allowSilentOverride = true) {

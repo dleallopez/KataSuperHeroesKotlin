@@ -2,6 +2,7 @@ package com.karumi.data.repository
 
 import android.util.Log
 import com.karumi.domain.model.SuperHero
+import com.karumi.ui.presenter.NetworkErrorException
 
 class SuperHeroRepository {
     companion object {
@@ -15,6 +16,7 @@ class SuperHeroRepository {
         superHeroes = fakeData()
     }
 
+    @Throws(NetworkErrorException::class)
     fun getAllSuperHeroes(): List<SuperHero> {
         waitABit()
         return superHeroes

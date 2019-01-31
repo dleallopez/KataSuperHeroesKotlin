@@ -4,6 +4,7 @@ import android.arch.lifecycle.LifecycleObserver
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
+import android.view.View
 import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.android.KodeinAppCompatActivity
 import com.karumi.asApp
@@ -25,4 +26,7 @@ abstract class BaseActivity : KodeinAppCompatActivity() {
     }
 
     open fun preparePresenter(intent: Intent?) {}
+
+    val contentView
+        get() = findViewById<View>(android.R.id.content)
 }

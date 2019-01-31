@@ -23,6 +23,7 @@ import com.karumi.domain.model.SuperHero
 import com.karumi.matchers.RecyclerViewItemsCountMatcher
 import com.karumi.matchers.ToolbarMatcher
 import com.karumi.recyclerview.RecyclerViewInteraction
+import com.karumi.ui.presenter.NetworkErrorException
 import com.karumi.ui.view.MainActivity
 import com.karumi.ui.view.SuperHeroDetailActivity
 import com.nhaarman.mockitokotlin2.whenever
@@ -137,6 +138,15 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
         intended(hasExtra("super_hero_name_key", superHero.name))
     }
 
+    @Test
+    fun throwsExceptionWhenFetchingSuperHeroesAndNoNetwork() {
+        givenNoNetwork()
+
+        startActivity()
+
+        onView(withText("Network error!")).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+    }
+
     private fun givenThereAreNoSuperHeroes() {
         whenever(repository.getAllSuperHeroes()).thenReturn(emptyList())
     }
@@ -153,10 +163,8 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
         return superheroes
     }
 
-    private fun givenSomeAvengers(): List<SuperHero> {
-        val superheroes = mockSuperheroes(SOME_SUPERHEROES, true)
-        whenever(repository.getAllSuperHeroes()).thenReturn(superheroes)
-        return superheroes
+    private fun givenNoNetwork() {
+        whenever(repository.getAllSuperHeroes()).thenThrow(NetworkErrorException)
     }
 
     private fun givenSuperheroesWithAvengersInEvenPosition(size: Int): List<SuperHero> {
